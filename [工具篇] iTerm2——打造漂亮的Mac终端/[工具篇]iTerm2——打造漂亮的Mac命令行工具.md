@@ -1,3 +1,5 @@
+
+
 # [工具篇] iTerm2——打造漂亮的Mac终端
 
 > 你可以不会几个命令，但你必须要有一个好看的命令行工具。
@@ -65,13 +67,13 @@ iTerm2   是Mac 上用来取代 Terminal 的一款终端模拟器，可以说是
 
 ![截图](./img/screen shot2.png)
 
-# Bash vs Zsh
+## Bash vs Zsh
 
 很多教程介绍了 iTerm2 和 **oh-my-zsh** 搭配使用，**Zsh** 确实好用，但我用了一段时间又回归到 **Bash** 了，主要原因是大多系统默认只有 Bash，Zsh 用多了再去用 Bash 会不太适应…...
 
 Bash 是 Unix-like 系统自带的命令行，Zsh（读作：Z shell）是开源社区主导的命令行，所以有很多人开发各种插件和主题。**oh-my-zsh** 就是聚集了各种 Zsh 插件和主题的平台，很多好看的主题都来自于此。
 
-Zsh 功能更强大，比如命令输入提示功能，但如果只是简单使用命令行，我觉得 Bash 更加适用。
+Zsh 功能更强大，比如命令输入提示功能，但配置比较复杂。如果是初学者，我觉得 Bash 更加适用，毕竟杀鸡焉用牛刀。
 
 #### Oh My Bash
 
@@ -92,7 +94,16 @@ git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 ```
 
 2. 执行`~/.bash_it/install.sh` 就可以自动安装
-3. 通过 `~/.bash_profile`来配置自定义选项
+
+3. 通过 `~/.bash_profile`（或者`.bashrc`）来配置自定义选项
+
+4. 加载 `bash-it`
+
+   ```bash
+   source ~/.bash_profile
+   ```
+
+   
 
 ### 主题
 
@@ -106,6 +117,29 @@ export BASH_IT_THEME='mbriggs'
 
 ![主题截图](./img/screen shot3.png)
 
-这么多主题总有一款适合你。我最喜爱的主题是`mbriggs`，主要是非常简洁明了，不像那些花里胡哨🙂。
+这么多主题总有一款适合你。我最喜爱的主题是`mbriggs`，主要是非常简洁明了，不像那些花里胡哨的😉。
 
 ![主题](./img/screen shot4.png)
+
+### 命令
+
+Bash-it 自带有很多别名、补全和插件，可以通过 `bash-it`命令使用。
+
+![](./img/screen shot5.png)
+
+更改配置后需要通过`bash-it reload` 重启生效。
+
+## 去除 Mac 终端的 bogon
+
+命令行终端里的主机名变成了 **bogon**？
+
+> Mac 下的终端经常有时候前面的计算机名会错误的显示成 bogon. 这是因为终端会先向 DNS 请求查询当前 IP 的反向域名解析的结果，如果查询不到再显示我们设置的计算机名。而由于我们的 DNS 错误地将保留地址反向的 NS 查询结果返回了 bogon. 其中 bogon 本应该用来指虚假的 IP 地址，而非保留 IP 地址。因此就出现了会时不时地打印 bogon 这种奇怪名字作为计算机名的现象了。
+
+解决办法，直接设置主机名：
+
+```bash
+sudo hostname your-desired-host-name
+sudo scutil --set LocalHostName $(hostname)
+sudo scutil --set HostName $(hostname)
+```
+
