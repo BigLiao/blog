@@ -55,7 +55,7 @@ iTerm2   是Mac 上用来取代 Terminal 的一款终端模拟器，可以说是
 
 *Solarized Dark*：
 
-![截图](./img/screen shot1.png)
+![截图](http://ww4.sinaimg.cn/large/006tNc79gy1g5gqk7fablj310a0u0gtw.jpg)
 
 #### 透明背景色
 
@@ -65,7 +65,7 @@ iTerm2   是Mac 上用来取代 Terminal 的一款终端模拟器，可以说是
 
 像这样：
 
-![截图](./img/screen shot2.png)
+![截图](http://ww1.sinaimg.cn/large/006tNc79gy1g5gqkio6f9j30zs0sa7bt.jpg)
 
 ## Bash vs Zsh
 
@@ -115,17 +115,17 @@ export BASH_IT_THEME='mbriggs'
 
 改变主题只需把变量 `BASH_IT_THEME`改成其他主题名字即可。输入`BASH_PREVIEW=true bash-it reload`可以预览所有主题。如图：
 
-![主题截图](./img/screen shot3.png)
+![主题截图](http://ww4.sinaimg.cn/large/006tNc79gy1g5gqkqrylwj30u0115qj3.jpg)
 
 这么多主题总有一款适合你。我最喜爱的主题是`mbriggs`，主要是非常简洁明了，不像那些花里胡哨的😉。
 
-![主题](./img/screen shot4.png)
+![主题](http://ww3.sinaimg.cn/large/006tNc79gy1g5gqkyrkrpj310a0u0qad.jpg)
 
 ### 命令
 
 Bash-it 自带有很多别名、补全和插件，可以通过 `bash-it`命令使用。
 
-![](./img/screen shot5.png)
+![](http://ww3.sinaimg.cn/large/006tNc79gy1g5gqkzqf3oj30u0115qj3.jpg)
 
 更改配置后需要通过`bash-it reload` 重启生效。
 
@@ -142,4 +142,3 @@ sudo hostname your-desired-host-name
 sudo scutil --set LocalHostName $(hostname)
 sudo scutil --set HostName $(hostname)
 ```
-
