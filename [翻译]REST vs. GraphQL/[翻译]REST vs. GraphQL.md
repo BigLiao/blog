@@ -10,9 +10,9 @@ Date: 2019-07-29
 
 # [翻译]REST vs. GraphQL
 
-*This post has been published first on* [*CodingTheSmartWay.com*](http://codingthesmartway.com/?source=post_page---------------------------)
+*This post has been published first on* [*CodingTheSmartWay.com*](http://codingthesmartway.com/)
 
-[**去 YouTube 上订阅作者**](https://www.youtube.com/channel/UCLXQoK41TOcIsWtY-BgB_kQ?sub_confirmation=1&source=post_page---------------------------)
+[**去 YouTube 上订阅原作者**](https://www.youtube.com/channel/UCLXQoK41TOcIsWtY-BgB_kQ?sub_confirmation=1)
 
 REST 和 GraphQL 是 HTTP 请求数据的两种方式。基于 REST 的方式（REST-based）是传统的方式，最近几年采用这种方式的技术栈的比例比非常高。
 
@@ -224,4 +224,3 @@ query PostsAndUser {
 ```
 
 ![](./img/Screen Shot 2019-07-30 at 02.14.18.png)
-
