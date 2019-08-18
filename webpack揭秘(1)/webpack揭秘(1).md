@@ -1,4 +1,4 @@
-# webpack详解(1)
+# webpack揭秘(1)
 
 > 放心，其实我也记不住webpack的配置:)
 
@@ -375,7 +375,7 @@ module.exports = {
 
 执行 `npm run dev`，可以看到命令行启动了一个本地服务器，端口为 8000（如果被占用了，可以改成其他）。访问这个本地地址 `http://localhost:8000` ，可以看到之前的页面。试着手动修改一下 `src` 下的源文件，发现页面内容也自动跟着变了！
 
-实际上 webpack 并没有重新刷新整个页面，而是使用了 **Hot Module Replacement (热加载，HMR)** 功能，自动更新部分代码。查看控制台中的网络请求，这个 websocket 连接就是用来热加载更新代码的。
+实际上 webpack 并没有重新刷新整个页面，而是使用了 **Hot Module Replacement (热更新，HMR)** 功能，自动更新部分代码。查看控制台中的网络请求，这个 websocket 连接就是用来热加载更新代码的。
 
 ![网页截图](https://cdn.bigliao.com/c6f697d7f9197d47b4099f096b083c87.png)
 
@@ -402,7 +402,7 @@ module.exports = {
 
 因为 `cat2.jpg` 是放在 `src` 目录下的，而本地 8000 端口的服务器是`dist` 目录的，这样的请求连接当然是请求不到的。
 
-我们需要 `html-loader` 和 `file-loader`，前者解析 `html` 中的 `img` 标签，后者把图片资源移动到目标文件夹。
+我们需要 `html-loader` 和 `file-loader`，前者解析 `html` 中的 `img` 标签，后者负责把图片资源移动到目标文件夹。
 
 ```sh
 # 安装
@@ -452,5 +452,8 @@ module.exports = {
 
 ![页面截图](https://cdn.bigliao.com/6da02e09b9ff98e406891661c16dc0df.png)
 
-## webpack干了什么
+## webpack 的配置
 
+webpack 以配置复杂著称，好在实际开发中框架已经为我们做好了配置。实际上 webpack 4 可以开箱即用，默认配置的入口文件是 `src/index.js` 。
+
+翻看文档的时候发现 webpack 官网[文档]([https://webpack.docschina.org/configuration/#%E9%80%89%E9%A1%B9](https://webpack.docschina.org/configuration/#选项))里已经做了非常棒的配置说明，这部分还是看文档吧哈哈哈！
