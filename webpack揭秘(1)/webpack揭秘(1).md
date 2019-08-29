@@ -1,10 +1,10 @@
-# webpack揭秘(1)
+# webpack揭秘(1)——初探
 
 > 放心，其实我也记不住webpack的配置:)
 
 ## webpack简介
 
-![webpack banner](/Users/liao/Desktop/Screen Shot 2019-08-17 at 11.16.07.png)
+![webpack banner](https://cdn.bigliao.com/e792e85d0a8353d919ee7416af469716.png)
 
 这张来自 webpack [官网](https://webpack.js.org/)的配图已经形象地告诉我们 webpack 是做什么用的：把一堆相互依赖的模块（各种类型的文件）打包成静态资源文件。
 
@@ -202,7 +202,7 @@ module.exports = {
 
 #### 打包 CSS
 
-webpack 打包各种资源都需要相应的 `loader` 。打包 `css` 的话需要 `css-loader` 和  `style-loader` ，前者让 webpack 可以处理 `css` 文件，后者讲 `css` 注入到 `html` 中。
+webpack 打包各种资源都需要相应的 `loader` 。打包 `css` 的话需要 `css-loader` 和  `style-loader` ，前者让 webpack 可以处理 `css` 文件，后者将 `css` 注入到 `html` 中。
 
 ```sh
 npm install --save-dev style-loader css-loader
