@@ -147,7 +147,46 @@ module.exports = {
 
 通常我们会把静态资源放到 CDN 上，那么这里就要配置为 CDN 的基础 URL。
 
-# Loaders
+# module
+
+Webpack 把一切资源都看作是模块（module），module 项是跟解析模块相关的配置。
+
+### loader
+
+Loader 是 webpack 非常重要的概念，用于对模块的源代码进行转换。webpack 本身只支持 JS 和 JSON 文件，为了能够处理其他类型的模块，就要使用相应的 loader。loader 可以使你在 `import` 或"加载"模块时预处理文件，例如 `import` 一个 CSS 文件时，可以通过 `css-loader` 进行处理，它会把 CSS 编译到最终的 JS bundle 文件中。
+
+通过 `module.rules` 来配置解析模块所需的 loader。例如要解析 `scss` 文件，需要安装 `sass-loader`、`css-loader`、`style-loader`，它们要按照一定的顺序排列：
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.s(c|a)ss$/,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+          { loader: 'sass-loader' }
+        ]
+      }
+    ]
+  }
+};
+```
+
+这里要注意的是，配置 loader 与执行的顺序是相反的——**从下往上**执行，先执行 `sass-loader` 把 SASS 转换成 CSS，最后由 `style-loader` 把 CSS 注入到 HTML 中。
+
+也可以使用内联（inline）配置。在`import`语句中指定 loader，使用 `!` 分隔不同的 loader，如：
+
+```js
+import styles from 'style-loader!css-loader!sass-loader!./styles.scss';
+```
+
+
+
+### module.rules
+
+我们通过
 
 
 
