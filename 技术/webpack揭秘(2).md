@@ -414,7 +414,7 @@ module.exports = {
 
 如果用户这些写 `import util from './util'`，那么会依次尝试查找 `./util.wasm` 、`./util.mjs`、`./util.js`、`./util.json`，如果找到就结束。
 
-### 第三方模块目录 (modules)
+### 引入模块目录 (modules)
 
 当我们在代码引入 npm 包时（例如 `import axios from 'axios'`），webpack 会自动从`node_modules` 文件夹查找，这个默认查找文件夹就是在这里配置的：
 

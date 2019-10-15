@@ -1,4 +1,3 @@
-```yaml
 ---
 Title: [翻译]REST vs. GraphQL
 Author: Sebastian Eschweiler
@@ -6,7 +5,6 @@ Translator: BigLiao
 OriginalURL: https://medium.com/codingthesmartway-com-blog/rest-vs-graphql-418eac2e3083
 Date: 2019-07-29
 ---
-```
 
 # [翻译]REST vs. GraphQL
 
@@ -42,7 +40,7 @@ REST 的核心概念为一切都是资源。虽然 REST 在最初提出的时候
 
 https://jsonplaceholder.typicode.com/ 
 
-![](./img/Screen Shot 2019-07-30 at 00.28.17.png)
+![](https://cdn.bigliao.com/fa65a2c695603271a430f7672a4f2693.png)
 
 JSONPlaceholder 的 API 提供了许多端点（endpoint），或者称作资源（resource），例如：
 
@@ -53,13 +51,13 @@ JSONPlaceholder 的 API 提供了许多端点（endpoint），或者称作资源
 
 想获取某条 post 的话，可通过这条 URL： `https://jsonplaceholder.typicode.com/posts/1` 来发送一个 HTTP GET 请求，这会请求 ID 为 1 的 post。你可以用 Postman 来发送这个请求：
 
-![](./img/Screen Shot 2019-07-30 at 00.42.37.png)
+![](https://cdn.bigliao.com/908ab974056861df36903a78efa2bc1b.png)
 
 返回的 JSON 对象包含了以下 post 数据：`id`，`title`，`user`，`body`。如上所述，请求某个具体 post 总是返回整个数据集合。
 
 如果你现在想知道相应作者的信息，那么你就要再发送一条 GET 请求到服务器，请求 id 为 1 的 user 详情。所以你需要发送这个请求：`https://jsonplaceholder.typicode.com/users/1`：
 
-![](./img/Screen Shot 2019-07-30 at 00.51.43.png)
+![](https://cdn.bigliao.com/a891e7fac0d806e8828d0e16826befc5.png)
 
 使用 REST 的方式，需要通过两轮到服务器的请求才能获取帖子和相应的作者信息。
 
@@ -90,13 +88,13 @@ JSONPlaceholder 的 API 提供了许多端点（endpoint），或者称作资源
 
 > 译者注：Apollo Launchpad 已不再提供服务，推荐使用 CodeSandbox
 
-![](./img/Screen Shot 2019-07-30 at 01.43.29.png)
+![](https://cdn.bigliao.com/03110b8e6f8842a4fc7c96e0efedbe9d.png)
 
 下面使用 CodeSandbox 进行演示。通过这个链接可以打开写好的例子：
 
  https://codesandbox.io/embed/apollo-server-t6crq
 
-![](./img/Screen Shot 2019-07-30 at 02.08.33.png)
+![](https://cdn.bigliao.com/8a53cd7276fcc934f80352bc5891aaed.png)
 
 你可以直接使用上面的链接，或者自己实现一个服务。下面是相应的 `JavaScript` 代码：
 
@@ -223,7 +221,7 @@ query PostsAndUser {
 }
 ```
 
-![](./img/Screen Shot 2019-07-30 at 02.14.18.png)
+![](https://cdn.bigliao.com/f8ad0dfdc344dbee8111184a3eb01fde.png)
 
 只需要一个请求，我们就能同时获得`post`和`user`这两个内容。
 
@@ -368,7 +366,7 @@ query PostsAndUser {
 
 通过执行上述查询例子，你应该对 GraphQL 之间的实体（entity）是如何连接的有了一个基本概念，同时你能够利用 “Graph（图）” 中的连接来组合不同实体之间的数据。下面这张图片用图形化的方式展示了前面的例子所用到的 *图*：
 
-![](./img/0_xMVojuntPaO-bpQ5.png)
+![](https://cdn.bigliao.com/cb514596b3f2a98a7be98cb54b95c8cf.png)
 
 目前我们所有的查询例子都使用图中相同的入口：ID 为 1 的 `post`。当然我们也可以用其他入口，像在下面这个例子中看到的一样：
 

@@ -1,3 +1,8 @@
+---
+Title: webpack揭秘(1)——初探
+Author: bigliao
+Date: 2019-08-02
+---
 # webpack揭秘(1)——初探
 
 > 放心，其实我也记不住webpack的配置:)
