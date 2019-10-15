@@ -145,3 +145,7 @@ sudo hostname your-desired-host-name
 sudo scutil --set LocalHostName $(hostname)
 sudo scutil --set HostName $(hostname)
 ```
+
+## 补充 (2019-10-15)
+
+最新的 MacOS Catalina 把默认终端改成 `zsh` 了，所以我这篇教程怕是没啥用了。。。
