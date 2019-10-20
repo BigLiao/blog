@@ -118,18 +118,15 @@ $$
 $$
 下面是证明：
 $$
-\begin{equation}
 \left\{
   \begin{array}{l}
   x'=x\cos\phi-y\sin\phi & \\
   y'=x\sin\phi+y\cos\phi
   \end{array}
 \right.
-\end{equation}
 $$
 使用极坐标，令 $x=r\cos\theta, y=r\sin\theta$，那么
 $$
-\begin{equation}
 \left\{
   \begin{array}{lr}
   x'=r(\cos\phi\cos\theta-\sin\phi\sin\theta) \\
@@ -143,7 +140,6 @@ $$
   y'=r\sin(\phi+\theta)
   \end{array}
 \right.
-\end{equation}
 $$
 
 
@@ -315,14 +311,12 @@ a_{21}x+a_{22}y
 $$
 可以列出方程组：
 $$
-\begin{equation}
 \left\{
   \begin{array}{l}
   a_{11}x+a_{12}y + 0 + 0 = x + \alpha \\
   0 + 0 + a_{21}x+a_{22}y = y + \beta
   \end{array}
 \right.
-\end{equation}
 $$
 我们要找出这样的 $a_{11},a_{12},a_{21},a_{22}$ 时等式成立，即求解 $a_{11},a_{12},a_{21},a_{22}$。
 
@@ -355,25 +349,21 @@ $$
 
 这个解题思路应该是**错误**的。让我们回到方程组：
 $$
-\begin{equation}
 \left\{
   \begin{array}{l}
   a_{11}x+a_{12}y = x + \alpha \\
   a_{21}x+a_{22}y = y + \beta
   \end{array}
 \right.
-\end{equation}
 $$
 
 $$
-\begin{equation}
 \left\{
   \begin{array}{l}
   (a_{11}-1)x+a_{12}y = \alpha \\
   a_{21}x+(a_{22}-1)y = \beta
   \end{array}
 \right.
-\end{equation}
 $$
 
 要使得对任意 $x, y$，方程组都成立，则 $x, y$ 项的系数应该为零。得到的结果是 $\alpha=\beta=0$，就是不移动……。所以结论是线性变换不能做平移操作。
