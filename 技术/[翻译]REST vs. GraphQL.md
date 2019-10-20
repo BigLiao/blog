@@ -1,8 +1,8 @@
 ---
-Title: [翻译]REST vs. GraphQL
-Author: Sebastian Eschweiler
+Title: "[翻译]REST vs. GraphQL"
+Author: "Sebastian Eschweiler"
 Translator: BigLiao
-OriginalURL: https://medium.com/codingthesmartway-com-blog/rest-vs-graphql-418eac2e3083
+OriginalURL: "https://medium.com/codingthesmartway-com-blog/rest-vs-graphql-418eac2e3083"
 Date: 2019-07-29
 ---
 

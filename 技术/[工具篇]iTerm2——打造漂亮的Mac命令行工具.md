@@ -1,5 +1,5 @@
 ---
-Title: [工具篇] iTerm2——打造漂亮的Mac终端
+Title: "[工具篇] iTerm2——打造漂亮的Mac终端"
 Author: bigliao
 Date: 2019-07-28
 ---

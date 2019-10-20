@@ -1,5 +1,5 @@
 ---
-title: webpack揭秘(2)——核心概念
+title: "webpack揭秘(2)——核心概念"
 author: Bigliao
 keywords: 前端 webpack
 date: 2019-08-20
