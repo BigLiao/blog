@@ -32,7 +32,7 @@ const selectedFile = document.getElementById('input').files[0];
 <input type="file" id="input" onchange="handleFiles(this.files)">
 ```
 
-## 通过拖拽
+### 通过拖拽
 
 把文件直接拖拽到网页的目标区域，通过监听目标区域元素的 `drop` 事件，可以获得 `File` 对象。
 
