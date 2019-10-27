@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>[工具篇] iTerm2——打造漂亮的Mac终端 - 大料园</title>
+
+    
+    <link rel="stylesheet" href="/blog/assets/css/blog.css">
+    
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="/blog/">大料园</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      
+      
+    </ul>
+  </div>
+</nav>
+
+
+<main class="container pt-2">
+  <div class="row">
+    <div class="col-lg-9">
+      <article class="markdown-body">
+        <h1>[工具篇] iTerm2——打造漂亮的Mac终端</h1>
+<blockquote>
+<p>你可以不会几个命令，但你必须要有一个好看的命令行工具。</p>
+</blockquote>
+<p>本文没啥技术含量，就是介绍如何安装一个漂亮又好用的命令行工具。网上已经有很多介绍 iTerm2 的文章了，我这篇是记录一下自己的配置。软件只适用于 Mac 电脑，用 Windows 的同学 可以去用 <code>cmder</code>。</p>
+<h2>iTerm2</h2>
+<p><img src="http://ww2.sinaimg.cn/large/006tNc79gy1g5enmxwfe1j318g0hcmy6.jpg" alt=""></p>
+<p>iTerm2   是Mac 上用来取代 Terminal 的一款终端模拟器，可以说是 Mac 上最强大&lt;sup&gt;(almost)&lt;/sup&gt; 的终端模拟器（当然除了它和Terminal 我也没用过其他的）。详细可以看看<a href="https://www.iterm2.com/index">官网</a> 上的介绍，或者直接看下文。</p>
+<p>其实现在已经是 version 3 了，不过还是叫 iTerm2 ，别问为啥，我也不知道。</p>
+<h3>安装</h3>
+<ol>
+<li>
+<p>Homebrew 安装（推荐）</p>
+<pre><code class="language-bash">brew cask install iterm2
+</code></pre>
+</li>
+<li>
+<p>官网下载安装</p>
+<p><a href="https://iterm2.com/downloads/stable/latest">下载链接</a></p>
+</li>
+</ol>
+<h3>与 Terminal 的区别</h3>
+<p>总之就是比 Terminal 多了很多方便好用的功能，虽然很多强大的功能我没用过，常用的有：</p>
+<ul>
+<li>
+<p>历史记录。快捷键是 <strong>cmd+shift+h</strong></p>
+</li>
+<li>
+<p>自动补全。快捷键 <strong>cmd+;</strong></p>
+</li>
+<li>
+<p>分割多面板</p>
+</li>
+<li>
+<p>全局搜索。<strong>cmd+f</strong></p>
+</li>
+<li>
+<p>…...</p>
+</li>
+</ul>
+<h3>设置为默认命令行终端</h3>
+<p>打开 iTerm2，点击左上角按钮 <code>iTerm2 -&gt; Make iTerm2 Default Term</code> 即可。</p>
+<h2>配色</h2>
+<h4>Solarized Dark</h4>
+<p>网友们大多推荐的配色是<strong>Solarized</strong> ，确实挺好看的。先<a href="http://ethanschoonover.com/solarized/files/solarized.zip">下载</a> 配置包，解压后里面有适用于各种软件的主题文件，我们需要的是 iTerm2 的文件。</p>
+<p>安装方式：</p>
+<p><code>Proference</code>-&gt;<code>Profile</code>-&gt;<code>Colors</code>-&gt;<code>Color Presets</code>-&gt;<code>Import</code></p>
+<p>选择<code>iterm2-color-solarized</code>文件夹下的<code>Solarized Dark</code>和<code>Solarized Light</code>即可。</p>
+<p><em>Solarized Dark</em>：</p>
+<p><img src="http://ww4.sinaimg.cn/large/006tNc79gy1g5gqk7fablj310a0u0gtw.jpg" alt="截图"></p>
+<h4>透明背景色</h4>
+<p>不过我还是习惯用透明的背景色，没有双屏的情况下，把参考文档放在底下对着敲还是比较爽的。</p>
+<p><code>Proference</code>-&gt;<code>Profile</code>-&gt;<code>Colors</code>-&gt;<code>Color Presets</code>选择自带的<code>Dark Background</code>，然后在<code>Window</code>-&gt;<code>Transparency</code>设置一个透明度。</p>
+<p>像这样：</p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79gy1g5gqkio6f9j30zs0sa7bt.jpg" alt="截图"></p>
+<h2>Bash vs Zsh</h2>
+<p>很多教程介绍了 iTerm2 和 <strong>oh-my-zsh</strong> 搭配使用，<strong>Zsh</strong> 确实好用，但我用了一段时间又回归到 <strong>Bash</strong> 了，主要原因是大多系统默认只有 Bash，Zsh 用多了再去用 Bash 会不太适应…...</p>
+<p>Bash 是 Unix-like 系统自带的命令行，Zsh（读作：Z shell）是开源社区主导的命令行，所以有很多人开发各种插件和主题。<strong>oh-my-zsh</strong> 就是聚集了各种 Zsh 插件和主题的平台，很多好看的主题都来自于此。</p>
+<p>Zsh 功能更强大，比如命令输入提示功能，但配置比较复杂。如果是初学者，我觉得 Bash 更加适用，毕竟杀鸡焉用牛刀。</p>
+<h4>Oh My Bash</h4>
+<p>既不想用 Zsh，又想用这些主题的话，可以看看<a href="https://github.com/ohmybash/oh-my-bash"><strong>oh-my-bash</strong></a> 。<strong>oh-my-bash</strong> 是仿照 oh-my-zsh 做的开源项目，里面也有一些插件和主题。不过别急，这个项目不够成熟，我没用它。</p>
+<h2>Bash It</h2>
+<p><a href="https://github.com/Bash-it/bash-it"><strong>Bash It</strong></a> 也是仿照 oh-my-zsh 的开源项目，文档上直接写着 <em>&quot;a shameless ripoff of oh-my-zsh&quot;</em>。</p>
+<p>Bash-it 提供了类似的命令输入提示和很多其他（我没用过的）功能。</p>
+<h3>安装</h3>
+<ol>
+<li>通过 <code>git</code> 把代码下载到 <em>$HOME/.bash_it</em> 目录下</li>
+</ol>
+<pre><code class="language-bash">git <span class="hljs-built_in">clone</span> --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
+</code></pre>
+<ol start="2">
+<li>
+<p>执行<code>~/.bash_it/install.sh</code> 就可以自动安装</p>
+</li>
+<li>
+<p>通过 <code>~/.bash_profile</code>（或者<code>.bashrc</code>）来配置自定义选项</p>
+</li>
+<li>
+<p>加载 <code>bash-it</code></p>
+<pre><code class="language-bash"><span class="hljs-built_in">source</span> ~/.bash_profile
+</code></pre>
+</li>
+</ol>
+<h3>主题</h3>
+<p>Bash-it 的主题存放在 <code>~/.bash_it/themes</code>目录下，默认主题是 <code>bobby</code>。可以看到 <code>.bash_profile</code>里相关的配置项为：</p>
+<pre><code>export BASH_IT_THEME='mbriggs'
+</code></pre>
+<p>改变主题只需把变量 <code>BASH_IT_THEME</code>改成其他主题名字即可。输入<code>BASH_PREVIEW=true bash-it reload</code>可以预览所有主题。如图：</p>
+<p><img src="http://ww4.sinaimg.cn/large/006tNc79gy1g5gqkqrylwj30u0115qj3.jpg" alt="主题截图"></p>
+<p>这么多主题总有一款适合你。我最喜爱的主题是<code>mbriggs</code>，主要是非常简洁明了，不像那些花里胡哨的😉。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006tNc79gy1g5gqkyrkrpj310a0u0qad.jpg" alt="主题"></p>
+<h3>命令</h3>
+<p>Bash-it 自带有很多别名、补全和插件，可以通过 <code>bash-it</code>命令使用。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006tNc79gy1g5gqkzqf3oj30u0115qj3.jpg" alt=""></p>
+<p>更改配置后需要通过<code>bash-it reload</code> 重启生效。</p>
+<h2>去除 Mac 终端的 bogon</h2>
+<p>命令行终端里的主机名变成了 <strong>bogon</strong>？</p>
+<blockquote>
+<p>Mac 下的终端经常有时候前面的计算机名会错误的显示成 bogon. 这是因为终端会先向 DNS 请求查询当前 IP 的反向域名解析的结果，如果查询不到再显示我们设置的计算机名。而由于我们的 DNS 错误地将保留地址反向的 NS 查询结果返回了 bogon. 其中 bogon 本应该用来指虚假的 IP 地址，而非保留 IP 地址。因此就出现了会时不时地打印 bogon 这种奇怪名字作为计算机名的现象了。</p>
+</blockquote>
+<p>解决办法，直接设置主机名：</p>
+<pre><code class="language-bash">sudo hostname your-desired-host-name
+sudo scutil --<span class="hljs-built_in">set</span> LocalHostName $(hostname)
+sudo scutil --<span class="hljs-built_in">set</span> HostName $(hostname)
+</code></pre>
+<h2>补充 (2019-10-15)</h2>
+<p>最新的 MacOS Catalina 把默认终端改成 <code>zsh</code> 了，所以我这篇教程怕是没啥用了。。。</p>
+
+      </article>
+    </div>
+    <div class="col-lg-3 d-lg-block d-none"></div>
+  </div>
+
+</main>
+
+<div class="footer text-center">
+  Copyright© BigLiao | Powered by <a href="https://github.com/BigLiao/sinblog">SinBlog</a>
+</div>
+
+
+
+    
+    <script src="/blog/assets/js/blog.794bc55a.js"></script>
+    
+
+  </body>
+</html>

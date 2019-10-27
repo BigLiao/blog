@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>webpack揭秘(1)——初探 - 大料园</title>
+
+    
+    <link rel="stylesheet" href="/blog/assets/css/blog.css">
+    
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="/blog/">大料园</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      
+      
+    </ul>
+  </div>
+</nav>
+
+
+<main class="container pt-2">
+  <div class="row">
+    <div class="col-lg-9">
+      <article class="markdown-body">
+        <h1>webpack揭秘(1)——初探</h1>
+<blockquote>
+<p>放心，其实我也记不住webpack的配置:)</p>
+</blockquote>
+<h2>webpack简介</h2>
+<p><img src="https://cdn.bigliao.com/e792e85d0a8353d919ee7416af469716.png" alt="webpack banner"></p>
+<p>这张来自 webpack <a href="https://webpack.js.org/">官网</a>的配图已经形象地告诉我们 webpack 是做什么用的：把一堆相互依赖的模块（各种类型的文件）打包成静态资源文件。</p>
+<p>如果说现在是前端的工业时代，那 Node.js 就是蒸汽机。有了蒸汽机才有各种自动化设备，webpack 就是自动化工厂。在 webpack 之前还有 gulp、grunt，这两者就类似于流水生产线，跟 webpack 的区别在于，这两者是用<em>任务流</em>的的方式进行处理，而在 webpack 中一切都是资源。webpack 的强大之处在于能够自动处理资源之间的依赖关系。</p>
+<p>现在前端框架（如 React 和 Vue）都会使用 webpack 作为脚手架工具，将 <code>jsx</code> 或 <code>vue</code> 文件编译成最终的 <code>js</code> 和 <code>css</code> 文件。这些框架通常帮我们写好了 webpack 的配置，让我们不用关注打包过程而专注业务。本系列文章就是揭秘这些被隐藏的细节。</p>
+<h2>webpack的使用</h2>
+<h3>安装 webpack</h3>
+<p>先建立一个 demo 项目，然后安装 webpack。</p>
+<pre><code class="language-sh"><span class="hljs-comment"># 新建 demo 文件夹</span>
+mkdir demo &amp;&amp; <span class="hljs-built_in">cd</span> demo
+
+<span class="hljs-comment"># 初始化 npm</span>
+npm init -y
+
+<span class="hljs-comment"># 安装 webpack</span>
+npm install --save-dev webpack webpack-cli
+</code></pre>
+<p>安装成功后可以用 <code>npx webpack --version</code> 查看版本。当前版本是 4.39.2。</p>
+<h3>准备代码</h3>
+<p>在 <code>src</code> 目录下写源代码</p>
+<pre><code class="language-sh">mkdir src &amp;&amp; touch src/main.js &amp;&amp; touch src/index.html
+</code></pre>
+<pre><code class="language-html"><span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>webpack demo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>webpack 揭秘（1）<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"handlerClick()"</span>&gt;</span>点击<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"main.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<pre><code class="language-js"><span class="hljs-comment">// src/main.js</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handlerClick</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'button clicked!'</span>);
+}
+</code></pre>
+<p>使用在浏览器中打开这个 <code>index.html</code> ，点击按钮可以看到控制台打印出内容。</p>
+<p><img src="https://cdn.bigliao.com/12fdfda34410e776d8065ac6933a3009.png" alt="截图"></p>
+<h3>使用 webpack</h3>
+<p>这个时候在写另外一个 <code>say.js</code> 文件，如果我们想要调用里面的函数。</p>
+<pre><code class="language-js"><span class="hljs-comment">// src/say.js</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">say</span>(<span class="hljs-params">words</span>) </span>{
+    alert(<span class="hljs-string">'says '</span> + words);
+}
+
+<span class="hljs-comment">//--------------</span>
+<span class="hljs-comment">// src/main.js</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handlerClick</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'button clicked!'</span>);
+    say(<span class="hljs-string">'Hello, Webpack!'</span>);
+}
+</code></pre>
+<p>传统的做法是在 <code>index.html</code> 里再加一个 <code>script</code> 引入 <code>say.js</code>。使用 webpack 呢？只需要在 <code>say.js</code> 里使用 <code>export</code> 和在 <code>main.js</code> 里使用 <code>import</code> 语句。</p>
+<pre><code class="language-js"><span class="hljs-comment">// src/say.js</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">say</span>(<span class="hljs-params">words</span>) </span>{
+    alert(<span class="hljs-string">'says '</span> + words);
+}
+<span class="hljs-keyword">export</span> { say };
+
+<span class="hljs-comment">//--------------</span>
+<span class="hljs-comment">// src/main.js</span>
+<span class="hljs-keyword">import</span> { say } <span class="hljs-keyword">from</span> <span class="hljs-string">'./say'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handlerClick</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'button clicked!'</span>);
+    say(<span class="hljs-string">'Hello, Webpack!'</span>);
+}
+</code></pre>
+<p>这个时候刷新页面会看到报错：</p>
+<p><img src="https://cdn.bigliao.com/f92fbe116c71a1424b32897911d00ece.png" alt="截图"></p>
+<p>因为我们还没有用 webpack！在 demo 根目录新建文件 <code>webpack.config.js</code>：</p>
+<pre><code class="language-js"><span class="hljs-comment">// webpack.config.js</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./src/main.js'</span>,
+    <span class="hljs-attr">output</span>: {
+        <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+        <span class="hljs-attr">filename</span>: <span class="hljs-string">'bundler.js'</span>
+    }
+}
+</code></pre>
+<p>在 <code>package.json</code> 中的 <code>scripts</code> 中添加 <code>&quot;build&quot;: &quot;webpack&quot;</code>，然后执行 <code>npm run build</code>。可以看到生成了一个 <code>dist/bundler.js</code> 的文件，这个就是我们最终要使用的文件。</p>
+<p><img src="https://cdn.bigliao.com/81724efb3064ca082e719dde0600e7b1.png" alt=""></p>
+<p>修改 <code>index.html</code>，改成引用 <code>bundler.js</code> 文件。</p>
+<pre><code class="language-html"><span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>webpack demo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>webpack 揭秘（1）<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"handlerClick()"</span>&gt;</span>点击<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"../dist/bundler.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>点击按钮发现还是报错了，WTF！原来是 webpack 打包的时候，各个文件都有独立的作用域，并没有把 <code>handlerClick</code>  添加到全局作用域，所以才找不到这个变量。只能改造一下 <code>main.js</code> 代码，使用 <code>addEventListener</code> 来绑定事件了。记得在 <code>index.html</code> 中给按钮添加 <code>id=&quot;btn&quot;</code>。</p>
+<pre><code class="language-js"><span class="hljs-comment">// src/main.js</span>
+<span class="hljs-keyword">import</span> { say } <span class="hljs-keyword">from</span> <span class="hljs-string">'./say'</span>;
+
+<span class="hljs-keyword">const</span> button = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'btn'</span>);
+button.addEventListener(<span class="hljs-string">'click'</span>, handlerClick);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handlerClick</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'button clicked!'</span>);
+    say(<span class="hljs-string">'Hello, Webpack!'</span>);
+}
+</code></pre>
+<p>再执行 <code>npm run build</code> 打包一次，这个时候点击按钮就可以看到弹窗了。</p>
+<h3>正式使用 webpack</h3>
+<p>前面只是为了跟原始写法作对比，接下来开始正式使用。</p>
+<h4>自动注入 HTML</h4>
+<p>前面我们要自己在 <code>index.html</code> 中引入生成的 <code>bundler.js</code> 文件，但真实情况下我们有很多<code>js</code> 、<code>css</code> 文件要引入，而且文件名也会动态变化，不可能手动引入的，这个时候就要使用 <code>html-webpack-plugin</code>。</p>
+<pre><code class="language-sh"><span class="hljs-comment"># 安装 plugin</span>
+npm install --save-dev html-webpack-plugin
+</code></pre>
+<p>配置 <code>webpack.config.js</code>：</p>
+<pre><code class="language-js"><span class="hljs-comment">// webpack.config.js</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+    <span class="hljs-attr">mode</span>: <span class="hljs-string">'development'</span>,
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./src/main.js'</span>,
+    <span class="hljs-attr">output</span>: {
+        <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+        <span class="hljs-attr">filename</span>: <span class="hljs-string">'bundler.js'</span>
+    },
+    <span class="hljs-attr">plugins</span>: [
+        <span class="hljs-keyword">new</span> HtmlWebpackPlugin({
+            <span class="hljs-attr">template</span>: <span class="hljs-string">'./src/index.html'</span>
+        })
+    ]
+}
+</code></pre>
+<p>然后删除<code>src/indx.html</code> 中的 <code>script</code> 标签。执行 <code>npm run build</code>，会发现 <code>dist</code> 目录下多了一个 <code>index.html</code> 文件。这个就是 <code>html-webpack-plugin</code> 生产的，它<em>自动注入</em> 了打包后的 js 文件。</p>
+<h4>打包 CSS</h4>
+<p>webpack 打包各种资源都需要相应的 <code>loader</code> 。打包 <code>css</code> 的话需要 <code>css-loader</code> 和  <code>style-loader</code> ，前者让 webpack 可以处理 <code>css</code> 文件，后者将 <code>css</code> 注入到 <code>html</code> 中。</p>
+<pre><code class="language-sh">npm install --save-dev style-loader css-loader
+</code></pre>
+<p>配置 <code>webpack.config.js</code>：</p>
+<pre><code class="language-js"><span class="hljs-comment">// webpack.config.js</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./src/main.js'</span>,
+    <span class="hljs-attr">output</span>: {
+        <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+        <span class="hljs-attr">filename</span>: <span class="hljs-string">'bundler.js'</span>
+    },
+    <span class="hljs-attr">module</span>: {
+        <span class="hljs-attr">rules</span>: [
+            {
+                <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,
+                <span class="hljs-attr">use</span>: [<span class="hljs-string">'style-loader'</span>, <span class="hljs-string">'css-loader'</span>]
+            }
+        ]
+    },
+    <span class="hljs-attr">plugins</span>: [
+        <span class="hljs-keyword">new</span> HtmlWebpackPlugin({
+            <span class="hljs-attr">template</span>: <span class="hljs-string">'./src/index.html'</span>
+        })
+    ]
+}
+</code></pre>
+<p>在 <code>src</code> 目录下新增 <code>style.css</code> 文件：</p>
+<pre><code class="language-css"><span class="hljs-comment">/* src/style.css */</span>
+
+<span class="hljs-selector-class">.body</span> {
+    <span class="hljs-attribute">background-color</span>: <span class="hljs-number">#666</span>;
+    <span class="hljs-attribute">padding</span>: <span class="hljs-number">20px</span> <span class="hljs-number">30px</span>;
+}
+
+<span class="hljs-selector-tag">h1</span> {
+    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">24px</span>;
+}
+
+<span class="hljs-selector-id">#btn</span> {
+    <span class="hljs-attribute">color</span>: red;
+}
+</code></pre>
+<p>然后在 <code>src/main.js</code> 中引入 <code>style.css</code>：</p>
+<pre><code class="language-js"><span class="hljs-comment">// src/main.js</span>
+<span class="hljs-keyword">import</span> { say } <span class="hljs-keyword">from</span> <span class="hljs-string">'./say'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'./style.css'</span>;
+
+<span class="hljs-keyword">const</span> button = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'btn'</span>);
+button.addEventListener(<span class="hljs-string">'click'</span>, handlerClick);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handlerClick</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'button clicked!'</span>);
+    say(<span class="hljs-string">'Hello, Webpack!'</span>);
+}
+</code></pre>
+<p>运行打包命令 <code>npm run build</code>，然后在浏览器中打开 <code>dist/index.html</code> 就可以看到效果了。</p>
+<p><img src="https://cdn.bigliao.com/e31a00af6b6a0026cbae3db9f239b1eb.png" alt="网页截图"></p>
+<h4>自动打包</h4>
+<p>每次修改文件后都要打包一次实在是麻烦，可以自动打包吗？当然可以。</p>
+<p>在 <code>package.json</code> 文件中的 <code>script</code> 里新增一个 <code>webpack --watch</code> 的命令：</p>
+<pre><code class="language-json">// package.json
+{
+  // ...
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack --watch"
+  }
+  //...
+}
+</code></pre>
+<p>执行 <code>npm run dev</code>，会启用监听模式，webpack 监听到文件修改后会自动打包。比如我们修改一下 <code>src/style.css</code> ：</p>
+<pre><code class="language-css"><span class="hljs-comment">/* src/style.css */</span>
+
+<span class="hljs-selector-tag">body</span> {
+    <span class="hljs-attribute">background-color</span>: <span class="hljs-number">#996</span>;
+    <span class="hljs-attribute">padding</span>: <span class="hljs-number">20px</span> <span class="hljs-number">30px</span>;
+}
+
+<span class="hljs-selector-tag">h1</span> {
+    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">24px</span>;
+}
+
+<span class="hljs-selector-id">#btn</span> {
+    <span class="hljs-attribute">color</span>: red;
+}
+</code></pre>
+<p>会看到命令行子自动打包了一次，然后刷新一下浏览器</p>
+<p><img src="https://cdn.bigliao.com/350908314fb634dfda23e8b432e0af94.png" alt="网页截图"></p>
+<h4>自动刷新浏览器</h4>
+<p>每次都要手动刷新浏览器也很麻烦，能不能自动刷新？当然也可以。</p>
+<p>借助 <code>webpack-dev-server</code> 启动一个本地服务器，可以实现自动刷新。</p>
+<pre><code class="language-sh"><span class="hljs-comment"># 安装 webpack-dev-server</span>
+npm install --save webpack-dev-server
+</code></pre>
+<pre><code class="language-js"><span class="hljs-comment">// webpack.config.js</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./src/main.js'</span>,
+    <span class="hljs-attr">output</span>: {
+        <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+        <span class="hljs-attr">filename</span>: <span class="hljs-string">'bundler.js'</span>
+    },
+    <span class="hljs-attr">module</span>: {
+        <span class="hljs-attr">rules</span>: [
+            {
+                <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,
+                <span class="hljs-attr">use</span>: [<span class="hljs-string">'style-loader'</span>, <span class="hljs-string">'css-loader'</span>]
+            }
+        ]
+    },
+    <span class="hljs-attr">plugins</span>: [
+        <span class="hljs-keyword">new</span> HtmlWebpackPlugin({
+            <span class="hljs-attr">template</span>: <span class="hljs-string">'./src/index.html'</span>
+        })
+    ],
+    <span class="hljs-attr">devServer</span>: {
+        <span class="hljs-attr">contentBase</span>: <span class="hljs-string">'./dist'</span>,
+	      <span class="hljs-attr">port</span>: <span class="hljs-number">8000</span>
+    }
+}
+</code></pre>
+<p>然后修改 <code>package.json</code> 中的命令配置：</p>
+<pre><code class="language-json">// package.json
+{
+  //...
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server"
+  },
+  //...
+}
+</code></pre>
+<p>执行 <code>npm run dev</code>，可以看到命令行启动了一个本地服务器，端口为 8000（如果被占用了，可以改成其他）。访问这个本地地址 <code>http://localhost:8000</code> ，可以看到之前的页面。试着手动修改一下 <code>src</code> 下的源文件，发现页面内容也自动跟着变了！</p>
+<p>实际上 webpack 并没有重新刷新整个页面，而是使用了 <strong>Hot Module Replacement (热更新，HMR)</strong> 功能，自动更新部分代码。查看控制台中的网络请求，这个 websocket 连接就是用来热加载更新代码的。</p>
+<p><img src="https://cdn.bigliao.com/c6f697d7f9197d47b4099f096b083c87.png" alt="网页截图"></p>
+<h4>图片资源</h4>
+<p>我想在 <code>html</code> 中放一只猫咪的图片，发现浏览器报错，找不到资源。</p>
+<pre><code class="language-html"><span class="hljs-meta">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>webpack demo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>webpack 揭秘（1）<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./cat2.jpg"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"a cat"</span> <span class="hljs-attr">width</span>=<span class="hljs-string">"100%"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"btn"</span>&gt;</span>点击一下<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p><img src="https://cdn.bigliao.com/07f6beb80cfed1c80de1521d3ae1c4ea.png" alt="页面截图"></p>
+<p>因为 <code>cat2.jpg</code> 是放在 <code>src</code> 目录下的，而本地 8000 端口的服务器是<code>dist</code> 目录的，这样的请求连接当然是请求不到的。</p>
+<p>我们需要 <code>html-loader</code> 和 <code>file-loader</code>，前者解析 <code>html</code> 中的 <code>img</code> 标签，后者负责把图片资源移动到目标文件夹。</p>
+<pre><code class="language-sh"><span class="hljs-comment"># 安装</span>
+npm install -D html-loader file-loader
+</code></pre>
+<pre><code class="language-js"><span class="hljs-comment">// webpack.config.js</span>
+<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./src/main.js'</span>,
+    <span class="hljs-attr">output</span>: {
+        <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'./dist'</span>),
+        <span class="hljs-attr">filename</span>: <span class="hljs-string">'bundler.js'</span>
+    },
+    <span class="hljs-attr">module</span>: {
+        <span class="hljs-attr">rules</span>: [
+            {
+                <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,
+                <span class="hljs-attr">use</span>: [<span class="hljs-string">'style-loader'</span>, <span class="hljs-string">'css-loader'</span>]
+            },
+            {
+                <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.html$/</span>,
+                <span class="hljs-attr">use</span>: [<span class="hljs-string">'html-loader'</span>]
+            },
+            {
+                <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.(png|jpg|jpeg|gif)$/</span>,
+                <span class="hljs-attr">use</span>: [<span class="hljs-string">'file-loader'</span>]
+            }
+        ]
+    },
+    <span class="hljs-attr">plugins</span>: [
+        <span class="hljs-keyword">new</span> HtmlWebpackPlugin({
+            <span class="hljs-attr">template</span>: <span class="hljs-string">'./src/index.html'</span>
+        })
+    ],
+    <span class="hljs-attr">devServer</span>: {
+        <span class="hljs-attr">contentBase</span>: <span class="hljs-string">'./dist'</span>,
+        <span class="hljs-attr">port</span>: <span class="hljs-number">8000</span>
+    }
+}
+</code></pre>
+<p>修改 <code>webpack.config.json</code> 文件后必须重启服务，<code>Ctrl+C</code> 关闭，然后 <code>npm run dev</code> 重新启动。</p>
+<p><img src="https://cdn.bigliao.com/6da02e09b9ff98e406891661c16dc0df.png" alt="页面截图"></p>
+<h2>webpack 的配置</h2>
+<p>webpack 以配置复杂著称，好在实际开发中框架已经为我们做好了配置。实际上 webpack 4 可以开箱即用，默认配置的入口文件是 <code>src/index.js</code> 。</p>
+<p>翻看文档的时候发现 webpack 官网<a href="%5Bhttps://webpack.docschina.org/configuration/#%E9%80%89%E9%A1%B9%5D(https://webpack.docschina.org/configuration/#%E9%80%89%E9%A1%B9)">文档</a>里已经做了非常棒的配置说明，这部分还是看文档吧哈哈哈！</p>
+
+      </article>
+    </div>
+    <div class="col-lg-3 d-lg-block d-none"></div>
+  </div>
+
+</main>
+
+<div class="footer text-center">
+  Copyright© BigLiao | Powered by <a href="https://github.com/BigLiao/sinblog">SinBlog</a>
+</div>
+
+
+
+    
+    <script src="/blog/assets/js/blog.794bc55a.js"></script>
+    
+
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Chrome浏览器新原生文件接口 - 大料园</title>
+
+    
+    <link rel="stylesheet" href="/blog/assets/css/blog.css">
+    
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="/blog/">大料园</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      
+      
+    </ul>
+  </div>
+</nav>
+
+
+<main class="container pt-2">
+  <div class="row">
+    <div class="col-lg-9">
+      <article class="markdown-body">
+        <h1>Chrome浏览器新原生文件接口</h1>
+<blockquote>
+<p>Chrome浏览器最新的原生文件文件系统接口 (Native File System API) ，目前还在试验阶段，它可以让 Web 应用直接读写设备上的文件。</p>
+</blockquote>
+<p>为了安全问题，Web 程序是不允许直接访问文件系统的。否则黑客可直接通过网页来获取你的文件内容了。所以，无论是读取文件内容，还是保存文件，都要经过用户允许。比如常用的上传和下载文件，都会出现一个弹窗让用户自己选择。这也是 Web 程序体验不如原生程序的地方。假如 Web 程序可以像原生程序一个直接读写文件，那么 Web 应用将有更多的机会替代原生应用，比如 IDEs，图片或者视频编辑器，文字编辑器等。</p>
+<h2>已有处理文件的接口</h2>
+<p>HTML5 里面增加了 <strong>File API</strong>，使我们可以很方便地处理文件。</p>
+<h3>通过表单选择文件</h3>
+<p>通过 <code>type=file</code> 的 <code>input</code> 标签，可以获取 <code>File</code> 对象。例如，</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"file"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"input"</span>&gt;</span>
+</code></pre>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> selectedFile = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'input'</span>).files[<span class="hljs-number">0</span>];
+</code></pre>
+<p>或者通过监听 <code>change</code> 事件：</p>
+<pre><code class="language-js">&lt;input type=<span class="hljs-string">"file"</span> id=<span class="hljs-string">"input"</span> onchange=<span class="hljs-string">"handleFiles(this.files)"</span>&gt;
+</code></pre>
+<h3>通过拖拽</h3>
+<p>把文件直接拖拽到网页的目标区域，通过监听目标区域元素的 <code>drop</code> 事件，可以获得 <code>File</code> 对象。</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">dropbox</span>&gt;</span>
+  拖拽文件到这里
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> dropbox = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"dropbox"</span>);
+dropbox.addEventListener(<span class="hljs-string">"drop"</span>, drop, <span class="hljs-literal">false</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">drop</span>(<span class="hljs-params">e</span>) </span>{
+  e.stopPropagation();
+  e.preventDefault();
+
+  <span class="hljs-keyword">const</span> dt = e.dataTransfer;
+  <span class="hljs-keyword">const</span> files = dt.files;
+
+  handleFiles(files);
+}
+</code></pre>
+<p>这里的<code>files</code> 就是包含 <code>File</code> 对象的数组。</p>
+<h3>File 对象</h3>
+<p><code>File</code> 对象其实是继承自 <code>Blob</code>，也就是说它包含所有 <code>Blob</code> 对象的方法和属性。除此之外，<code>File</code> 对象还有下面几个<em>只读</em>属性：</p>
+<ul>
+<li><code>File.lastModified</code>: 文件最后修改时间，UNIX 时间戳</li>
+<li><code>File.name</code>: 文件名</li>
+<li><code>File.size</code>: 文件大小，字节数</li>
+<li><code>File.type</code>: 返回文件的 MIME 类型</li>
+</ul>
+<p>这些是目前盛行的处理文件的方法。</p>
+<h2>Chrome浏览器原生文件接口</h2>
+<p>原生文件系统接口 (Native File System API) ——以前被称为可写入文件接口 (Writeable Files API)——目前还是 Chrome 浏览器上的一个试验接口，在 Chrome 78 以及更高版本中可用。</p>
+<p>这个原生文件接口让 Web 应用能够直接与文件系统进行交互，可以直接读取和保存文件而不用经过用户授权。</p>
+<h3>开启原生文件接口</h3>
+<p>由于这个接口还在试验阶段，所以还不能直接使用。需要一些操作来开启这个接口。注意，这个接口只能在 Chrome 浏览器使用。</p>
+<h4>本地开启</h4>
+<p>如果想在本地环境里体验这个接口，可以在 Chrome 浏览器里面打开地址 <code>chrome//flags</code> ，里面有很多实验性选项，开启 <code>#native-file-system-api</code> 即可。</p>
+<p>开启以后，通过 Chrome 直接打开本地网页有效，或者开启本地服务器，通过 <code>localhost</code> 域名访问。</p>
+<h4>获取试用</h4>
+<p>你可以向 Chrome 申请接口试用，这样所有 Chrome 78 版本以上的用户都能体验最新的接口。</p>
+<p><strong>起源试用</strong> (<a href="https://www.chromium.org/blink/origin-trials/running-an-origin-trial">origin trial</a>) 是 Chrome 官方提供的功能，让开发者可以试用最新功能并且可以收集反馈。具体如何申请可以看官方说明： <a href="https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md">Origin Trials Guide for Web Developers</a>。</p>
+<ol>
+<li>
+<p>首先<a href="https://developers.chrome.com/origintrials/#/view_trial/3868592079911256065">注册</a>一个试用 Token。</p>
+</li>
+<li>
+<p>然后把 Token 添加到页面上。有两种做法：</p>
+<ul>
+<li>
+<p>增加一个<code>origin-trial</code> 的  <code>&lt;meta&gt;</code> 标签，像这样：</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">"origin-trial"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"TOKEN_GOES_HERE"</span>&gt;</span>
+</code></pre>
+</li>
+<li>
+<p>通过配置服务器，在 HTTP 响应头部增加 <code>Origin-Trail</code> 字段：</p>
+<pre><code>Origin-Trial: TOKEN_GOES_HERE
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<h3>通过原生文件接口读取本地文件</h3>
+<p>原生文件接口中获取文件的接口是 <code>window.chooseFileSystemEntries()</code>。调用这个方法后浏览器会弹出一个选择框，提示用户选择文件。选择完成后会返回一个文件处理对象。这个方法接收一个 <code>options</code> 参数，可以配置选择多个文件、选择文件夹，或者标明文件类型。</p>
+<p>需要注意的是，这个接口必须在安全上下文（<a href="https://w3c.github.io/webappsec-secure-contexts/">secure context</a>）中执行，并且必须由用户主动操作来触发。</p>
+<blockquote>
+<p>安全上下文指的是网页的资源和通信都通过 HTTPS/TLS 分发，确保网页处于一种安全环境。许多强大的 API 都要求在安全上下文中执行，这主要是为了防止中间人攻击。</p>
+</blockquote>
+<pre><code class="language-js"><span class="hljs-keyword">let</span> fileHandle;
+butOpenFile.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">async</span> (e) =&gt; {
+  fileHandle = <span class="hljs-keyword">await</span> <span class="hljs-built_in">window</span>.chooseFileSystemEntries();
+  <span class="hljs-comment">// 使用 fileHandle 处理文件</span>
+});
+</code></pre>
+<p><code>fileHandle</code> 对象是 <a href="https://wicg.github.io/native-file-system/#api-filesystemfilehandle"><code>FileSystemFileHandle</code></a> 的实例，它具备操作文件的方法。<code>fileHandle.getFile()</code> 返回一个 <code>File</code> 对象（与前文的 <code>File</code> 对象相同），可以调用 <code>Blob</code> 的方法来获取文件内容。</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> file = <span class="hljs-keyword">await</span> fileHandle.getFile();
+<span class="hljs-keyword">const</span> contents = <span class="hljs-keyword">await</span> file.text();
+</code></pre>
+<h3>新建文件</h3>
+<p>通过给 <code>chooseFileSystemEntries()</code> 传入 options 对象 <code>{type: 'saveFile'}</code> 会触发保存文件的弹窗。例如：</p>
+<pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNewFileHandle</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> opts = {
+    <span class="hljs-attr">type</span>: <span class="hljs-string">'saveFile'</span>,
+    <span class="hljs-attr">accepts</span>: [{
+      <span class="hljs-attr">description</span>: <span class="hljs-string">'Text file'</span>,
+      <span class="hljs-attr">extensions</span>: [<span class="hljs-string">'txt'</span>],
+      <span class="hljs-attr">mimeTypes</span>: [<span class="hljs-string">'text/plain'</span>],
+    }],
+  };
+  <span class="hljs-keyword">const</span> handle = <span class="hljs-built_in">window</span>.chooseFileSystemEntries(opts);
+  <span class="hljs-keyword">return</span> handle;
+}
+</code></pre>
+<h3>保存文件变化</h3>
+<p>要写入文件到磁盘，需要一个  <a href="https://wicg.github.io/native-file-system/#filesystemwriter"><code>FileSystemWriter</code></a>，可以通过 <code>fileHandle.createWriter()</code> 创建。如果没有获得该文件的权限的话，会弹窗提示用户。</p>
+<pre><code class="language-js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeFile</span>(<span class="hljs-params">fileHandle, contents</span>) </span>{
+  <span class="hljs-keyword">const</span> writer = <span class="hljs-keyword">await</span> fileHandle.createWriter();
+  
+  <span class="hljs-comment">// 擦除文件内容</span>
+  <span class="hljs-keyword">await</span> writer.truncate(<span class="hljs-number">0</span>);
+  
+  <span class="hljs-comment">// 写入数据到文件中</span>
+  <span class="hljs-keyword">await</span> writer.write(<span class="hljs-number">0</span>, contents);
+
+  <span class="hljs-comment">// 关闭文件</span>
+  <span class="hljs-keyword">await</span> writer.close();
+}
+</code></pre>
+<h3>打开目录</h3>
+<p>将 <code>chooseFileSystemEntries(options)</code> options 中的 <code>type</code> 设置为 <code>openDirectory</code> 可以打开目录。返回的是 <a href="https://wicg.github.io/native-file-system/#api-filesystemdirectoryhandle"><code>FileSystemDirectoryHandle</code></a> 对象，跟 FileSystemFileHandle 差不多，<code>getEntries()</code> 可以获取目录下所有文件。</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> butDir = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'butDirectory'</span>);
+butDir.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">async</span> (e) =&gt; {
+  <span class="hljs-keyword">const</span> opts = {<span class="hljs-attr">type</span>: <span class="hljs-string">'openDirectory'</span>};
+  <span class="hljs-keyword">const</span> handle = <span class="hljs-keyword">await</span> <span class="hljs-built_in">window</span>.chooseFileSystemEntries(opts);
+  <span class="hljs-keyword">const</span> entries = <span class="hljs-keyword">await</span> handle.getEntries();
+  <span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> entry <span class="hljs-keyword">of</span> entries) {
+    <span class="hljs-keyword">const</span> kind = entry.isFile ? <span class="hljs-string">'File'</span> : <span class="hljs-string">'Directory'</span>;
+    <span class="hljs-built_in">console</span>.log(kind, entry.name);
+  }
+});
+</code></pre>
+<h2>示例：文字编辑器</h2>
+<p>Chrome 团队针对原生文件接口写了一个文字编辑器的示例，可以直接去里面 copy 代码。</p>
+<p>可以在线访问 <a href="https://googlechromelabs.github.io/text-editor/">https://googlechromelabs.github.io/text-editor/</a>。源代码地址：<a href="https://github.com/googlechromelabs/text-editor/">https://github.com/googlechromelabs/text-editor/</a>。</p>
+<h2>总结</h2>
+<p>在 Web 中操作文件是一种常见需求。随着 Web 应用越来越强大，对原生文件接口的需求也越来越迫切。目前这个接口还处于试验阶段，可以尝个鲜，或者在公司内部系统中使用。</p>
+
+      </article>
+    </div>
+    <div class="col-lg-3 d-lg-block d-none"></div>
+  </div>
+
+</main>
+
+<div class="footer text-center">
+  Copyright© BigLiao | Powered by <a href="https://github.com/BigLiao/sinblog">SinBlog</a>
+</div>
+
+
+
+    
+    <script src="/blog/assets/js/blog.794bc55a.js"></script>
+    
+
+  </body>
+</html>

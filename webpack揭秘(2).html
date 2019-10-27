@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>webpack揭秘(2)——核心概念 - 大料园</title>
+
+    
+    <link rel="stylesheet" href="/blog/assets/css/blog.css">
+    
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="/blog/">大料园</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      
+      
+    </ul>
+  </div>
+</nav>
+
+
+<main class="container pt-2">
+  <div class="row">
+    <div class="col-lg-9">
+      <article class="markdown-body">
+        <h1>webpack揭秘(2)——核心概念</h1>
+<blockquote>
+<p>我不生产内容，我只是文档的搬运工。</p>
+</blockquote>
+<h2>入口 (entry)</h2>
+<p><code>entry</code> 就是 webpack 打包的入口，它指定了 webpack 从哪个文件开始着手，然后顺着这个入口文件开始查找依赖，根据得到的<strong>依赖关系图</strong>（dependancy graph）把所有所需的代码打包起来。</p>
+<p><code>entry</code> 是 webpack 必须的配置。如果没有配置 <code>webpack.config.js</code> 文件，那么 entry 的默认值是 <code>src/index.js</code>。</p>
+<h3>context</h3>
+<p><strong>context</strong> （上下文）是 webpack 查找文件时的根目录，默认为当前工作目录（CWD）。entry 和 output 指定的都是相对 context 的路径。</p>
+<h3>entry 选项</h3>
+<p><code>string | [string] | object { &lt;key&gt;: string | [string] } | (function: () =&gt; string | [string] | object { &lt;key&gt;: string | [string] })</code></p>
+<p>entry 可以接收字符串、对象、函数，或者它们的数组。</p>
+<h5>entry: string</h5>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  entry: <span class="hljs-string">'src/main.js'</span>
+};
+</code></pre>
+<p>直接指定了入口文件。</p>
+<h5>entry: object</h5>
+<p>接收对象作为参数的话，key 是 <strong>chunk</strong>（代码块） 的名字，value 就是该 chunk 的入口文件。也就是说，webpack 会对每个 value 进行分析打包，最后生成对应以 key 为名字的包文件。例如，</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  entry: {
+    <span class="hljs-attr">home</span>: <span class="hljs-string">'./home.js'</span>,
+    <span class="hljs-attr">about</span>: <span class="hljs-string">'./about.js'</span>,
+    <span class="hljs-attr">contact</span>: <span class="hljs-string">'./contact.js'</span>
+  }
+};
+</code></pre>
+<p>最终会生成三个 <code>bundle</code> 文件。对于多页应用，或者多个 SPA ，可以使用这种方式。同时这也是一种代码分割方式。</p>
+<h5>entry: function</h5>
+<p>如果传入的是一个函数，那么就成了<strong>动态入口</strong>。每当 <code>make</code> 事件触发的时候（比如开始运行或 watch 模式下文件变动时），这个函数就是执行一次。</p>
+<p>函数可以直接返回入口文件地址字符串，也可以返回一个 <code>Promise</code> ，然后 <code>resolve</code> 入口文件地址。例如：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  entry: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> resolve([<span class="hljs-string">'./demo'</span>, <span class="hljs-string">'./demo2'</span>]))
+};
+</code></pre>
+<h5>entry: array</h5>
+<p>也可以传入一个数组，元素可以是上面的三种类型。传入数组的话，相当于多入口打包。与对象的多入口不同的是，数组并不会做代码分割，仍然是一个 chunk。</p>
+<h2>出口 (output)</h2>
+<p>output 接收一个对象，配置输出相关的内容。一个最常用的 output 配置如下：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  output: {
+    <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'dist'</span>),
+    <span class="hljs-attr">filename</span>: <span class="hljs-string">'[name].[chunkhash].js'</span>,
+    <span class="hljs-attr">publicPath</span>: <span class="hljs-string">'https://cdn.example.com/assets/'</span>
+  }
+};
+</code></pre>
+<h3>output.path</h3>
+<p>一个存放输出文件的<strong>绝对路径</strong>。</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  output: {
+    <span class="hljs-attr">path</span>: path.resolve(__dirname, <span class="hljs-string">'dist/assets'</span>)
+  }
+};
+</code></pre>
+<h3>output.filename</h3>
+<p>输出的<code>bundle</code>的文件名。当通过多个入口起点(entry point)、代码拆分(code splitting)或各种插件(plugin)创建多个 bundle，应该对应唯一的文件名。通过<code>[name]</code> 可以将 bundle 命名为 chunk 的名字（如果只有一个 chunk 的话，默认是 <code>main</code>）。使用 <code>[hash]</code> 可以为每次打包生成一个 hash，可用于缓存管理。可以使用以下替换模板字符串：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">模板</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">[hash]</td>
+<td style="text-align:center">模块标识符(module identifier)的 hash</td>
+</tr>
+<tr>
+<td style="text-align:center">[chunkhash]</td>
+<td style="text-align:center">chunk 内容的 hash</td>
+</tr>
+<tr>
+<td style="text-align:center">[name]</td>
+<td style="text-align:center">模块名称</td>
+</tr>
+<tr>
+<td style="text-align:center">[id]</td>
+<td style="text-align:center">模块标识符(module identifier)</td>
+</tr>
+<tr>
+<td style="text-align:center">[query]</td>
+<td style="text-align:center">模块的 query，例如，文件名 <code>?</code> 后面的字符串</td>
+</tr>
+<tr>
+<td style="text-align:center">[function]</td>
+<td style="text-align:center">The function, which can return filename [string]</td>
+</tr>
+</tbody>
+</table>
+<p><code>[hash]</code> 和 <code>[chunkhash]</code> 的长度可以使用 <code>[hash:16]</code>（默认为20）来指定。比较常用的 filename 配置是：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  output: {
+    <span class="hljs-attr">filename</span>: <span class="hljs-string">'[name].[chunkhash].js'</span>
+  }
+};
+</code></pre>
+<h3>output.publicPath</h3>
+<p>打包后的时候资源放在服务器上的路径。一般只在生产环境模式下配置。在 HTML 引入资源（如 JS、CSS、图片等）都会根据这个路径来解析。使用代码分割后异步加载的 JS 文件也是相对这个路径。</p>
+<p>publicPath 可以是一个本地（服务器上的）路径，也可以是一个 URL，不同情况下的含义也不一样：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  output: {
+    <span class="hljs-comment">// One of the below</span>
+    publicPath: <span class="hljs-string">'https://cdn.example.com/assets/'</span>, <span class="hljs-comment">// CDN（总是 HTTPS 协议）</span>
+    publicPath: <span class="hljs-string">'//cdn.example.com/assets/'</span>, <span class="hljs-comment">// CDN（协议相同）</span>
+    publicPath: <span class="hljs-string">'/assets/'</span>, <span class="hljs-comment">// 相对于服务(server-relative)</span>
+    publicPath: <span class="hljs-string">'assets/'</span>, <span class="hljs-comment">// 相对于 HTML 页面</span>
+    publicPath: <span class="hljs-string">'../assets/'</span>, <span class="hljs-comment">// 相对于 HTML 页面</span>
+    publicPath: <span class="hljs-string">''</span>, <span class="hljs-comment">// 相对于 HTML 页面（目录相同）</span>
+  }
+};
+</code></pre>
+<p>通常我们会把静态资源放到 CDN 上，那么这里就要配置为 CDN 的基础 URL。</p>
+<h1>模块 (module)</h1>
+<p>Webpack 把一切资源都看作是模块（module），module 项是跟解析模块相关的配置。</p>
+<h3>loader</h3>
+<p>Loader 是 webpack 最重要的概念之一，用于对加载模块。webpack 本身只支持 JS 和 JSON 文件，为了能够处理其他类型的模块，就要使用相应的 loader。loader 可以使你在 <code>import</code> 或&quot;加载&quot;模块时预处理文件，例如 <code>import</code> 一个 CSS 文件时，可以通过 <code>css-loader</code> 进行处理，它会把 CSS 编译到最终的 JS bundle 文件中。</p>
+<p>通过 <code>module.rules</code> 来配置解析模块所需的 loader。例如要解析 <code>scss</code> 文件，需要安装 <code>sass-loader</code>、<code>css-loader</code>、<code>style-loader</code>，它们要按照一定的顺序排列：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">module</span>: {
+    <span class="hljs-attr">rules</span>: [
+      {
+        <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.s(c|a)ss$/</span>,
+        <span class="hljs-attr">use</span>: [
+          { <span class="hljs-attr">loader</span>: <span class="hljs-string">'style-loader'</span> },
+          { <span class="hljs-attr">loader</span>: <span class="hljs-string">'css-loader'</span> },
+          { <span class="hljs-attr">loader</span>: <span class="hljs-string">'sass-loader'</span> }
+        ]
+      }
+    ]
+  }
+};
+</code></pre>
+<p>这里要注意的是，配置 loader 与执行的顺序是相反的——<strong>从下往上</strong>执行，先执行 <code>sass-loader</code> 把 SASS 转换成 CSS，最后由 <code>style-loader</code> 把 CSS 注入到 HTML 中。</p>
+<p>也可以使用内联（inline）配置。在<code>import</code>语句中指定 loader，使用 <code>!</code> 分隔不同的 loader，如：</p>
+<pre><code class="language-js"><span class="hljs-keyword">import</span> styles <span class="hljs-keyword">from</span> <span class="hljs-string">'style-loader!css-loader!sass-loader!./styles.scss'</span>;
+</code></pre>
+<p>如何配置 loader 呢？通常我们用 <code>module.rules</code>。</p>
+<h3>module.rules</h3>
+<p><code>module.rules</code> 里是一个规则（Rule）数组，用于匹配并处理不同的模块。通常用来配置 loader。Rule 的配置选项可以分为三类：条件(condition)，结果(result)和嵌套规则(nested rule)。</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">module</span>: {
+    <span class="hljs-attr">rules</span>: [
+      {
+        <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>, <span class="hljs-comment">// condition</span>
+        use: [ <span class="hljs-comment">// result</span>
+          { <span class="hljs-attr">loader</span>: <span class="hljs-string">'style-loader'</span> },
+          {
+            <span class="hljs-attr">loader</span>: <span class="hljs-string">'css-loader'</span>,
+            <span class="hljs-attr">options</span>: {
+              <span class="hljs-attr">modules</span>: <span class="hljs-literal">true</span>
+            }
+          },
+          { <span class="hljs-attr">loader</span>: <span class="hljs-string">'sass-loader'</span> }
+        ]
+      }
+    ]
+  }
+};
+</code></pre>
+<h5>条件选项 (condition rule)</h5>
+<p>筛选符合条件的模块用于结果。</p>
+<p><code>{ test: Condition }</code>：匹配特定条件。一般是提供一个正则表达式或正则表达式的数组，但这不是强制的。</p>
+<p><code>{ include: Condition }</code>：匹配特定条件。一般是提供一个字符串或者字符串数组，但这不是强制的。</p>
+<p><code>{ exclude: Condition }</code>：排除特定条件。一般是提供一个字符串或字符串数组，但这不是强制的。</p>
+<p><code>{ and: [Condition] }</code>：必须匹配数组中的所有条件。</p>
+<p><code>{ or: [Condition] }</code>：匹配数组中任何一个条件。</p>
+<p><code>{ not: [Condition] }</code>：必须排除这个条件。</p>
+<p>其中 <code>Condition</code> 可以是这些之一：</p>
+<ul>
+<li>字符串：匹配输入必须以提供的字符串开始。是的。目录绝对路径或文件绝对路径。</li>
+<li>正则表达式：test 输入值。</li>
+<li>函数：调用输入的函数，必须返回一个真值(truthy value)以匹配。</li>
+<li>条件数组：至少一个匹配条件。</li>
+<li>对象：匹配所有属性。每个属性都有一个定义行为。</li>
+</ul>
+<p>多个条件选项可以一起使用，最终返回符合所有条件的模块。</p>
+<h5>结果选项 (result rule)</h5>
+<p>当符合条件选项时使用。一般会用到 <code>use</code> 选项。</p>
+<p><code>use</code> 是一个数组，里面是<code>useEntry</code> 对象。</p>
+<p>当 <code>use</code> 传字符串的时候，是 <code>useEntry</code>的简写方式。<code>use: [ 'style-loader' ]</code> 等价于 <code>use: [ { loader: 'style-loader'}</code>。</p>
+<p><code>useEntry.loader</code> 是必需项，需要我们手动安装相应的 loader。例如我们要使用 <code>css-loader</code>，先要 <code>npm install css-loader</code>。还可传入一个 <code>useEntry.options</code>对象，给 loader 传入参数（具体需看相应 loader 的文档）。</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  <span class="hljs-built_in">module</span>: {
+    <span class="hljs-attr">rules</span>: [
+      {
+        <span class="hljs-attr">loader</span>: <span class="hljs-string">'css-loader'</span>,
+        <span class="hljs-attr">options</span>: {
+          <span class="hljs-attr">modules</span>: <span class="hljs-literal">true</span>
+        }
+      }
+    ]
+  }
+};
+</code></pre>
+<p>当有多个 <code>useEntry</code> 的时候，要记住执行顺序是相反的。</p>
+<h5>嵌套规则 (nested rule)</h5>
+<p>可以使用 <code>Rule.rules</code> 和 <code>Rule.oneOf</code> ，实现嵌套的规则。<code>Rule.rules</code> 是同样参数的规则数组，与 <code>Rule.oneOf</code>的区别在于它会依次匹配数组里的选项，而后者匹配成功一次就就结束匹配了。比如：</p>
+<pre><code>module.exports = {
+  //...
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        oneOf: [
+          {
+            resourceQuery: /inline/, // foo.css?inline
+            use: 'url-loader'
+          },
+          {
+            resourceQuery: /external/, // foo.css?external
+            use: 'file-loader'
+          }
+        ]
+      }
+    ]
+  }
+};
+</code></pre>
+<p>一个常见的配置：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>: {
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.js$/</span>,
+      <span class="hljs-attr">use</span>: [<span class="hljs-string">'babel-loader'</span>],
+      <span class="hljs-attr">options</span>:{
+        <span class="hljs-attr">cacheDirectory</span>:<span class="hljs-literal">true</span>,
+      },
+      <span class="hljs-attr">include</span>: path.resolve(__dirname, <span class="hljs-string">'src'</span>)
+    },
+    {
+      <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.scss$/</span>,
+      <span class="hljs-attr">use</span>: [<span class="hljs-string">'style-loader'</span>, <span class="hljs-string">'css-loader'</span>, <span class="hljs-string">'sass-loader'</span>],
+      <span class="hljs-attr">exclude</span>: path.resolve(__dirname, <span class="hljs-string">'node_modules'</span>),
+    },
+    {
+      <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/</span>,
+      <span class="hljs-attr">use</span>: [<span class="hljs-string">'file-loader'</span>],
+    },
+  ]
+}
+</code></pre>
+<h2>插件 (plugin)</h2>
+<p>插件为 webpack 提供了丰富而强大的功能，你可以用它来实现各种功能。插件可以访问 webpack 的<strong>整个</strong>编译生命周期，所以在 loader 中无法实现的事情可以由插件来实现。</p>
+<h3>插件配置</h3>
+<p>插件的用法非常简单，<code>plugins</code> 接收的是一个插件数组，通常是 <code>new</code> 插件实例：</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>); <span class="hljs-comment">//通过 npm 安装</span>
+<span class="hljs-keyword">const</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">'webpack'</span>); <span class="hljs-comment">//访问内置的插件</span>
+
+<span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">// ...</span>
+  plugins: [
+    <span class="hljs-keyword">new</span> webpack.ProgressPlugin(),
+    <span class="hljs-keyword">new</span> HtmlWebpackPlugin({<span class="hljs-attr">template</span>: <span class="hljs-string">'./src/index.html'</span>})
+  ]
+};
+</code></pre>
+<p>插件有 webpack 内置的，也有大量是社区编写的，每个插件的使用需要去查看插件的文档。</p>
+<h3>常用插件</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Plugin Name</th>
+<th style="text-align:left">Plugin Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">HtmlWebpackPlugin</td>
+<td style="text-align:left">自动生成一个 HTML5 文件，并自动注入打包后的 bundle 资源。<a href="https://github.com/jantimon/html-webpack-plugin#options">查看</a></td>
+</tr>
+<tr>
+<td style="text-align:left">SplitChunksPlugin</td>
+<td style="text-align:left">替代<code>CommonsChunkPlugin</code> ，提取共用的代码块。<a href="https://webpack.docschina.org/plugins/split-chunks-plugin/">查看</a></td>
+</tr>
+<tr>
+<td style="text-align:left">DefinePlugin</td>
+<td style="text-align:left">创建一个在<strong>编译</strong>时可以配置的全局常量。在定义环境变量时非常有用，比如定义<code>process.env.NODE_ENV</code> 来区分生产环境和开发环境。<a href="https://webpack.js.org/plugins/define-plugin/">查看</a></td>
+</tr>
+<tr>
+<td style="text-align:left">MiniCssExtractPlugin</td>
+<td style="text-align:left">提取 CSS 到单独的<code>.css</code>文件。不使用这个插件的话 CSS 是打包在 JS bundle 里的。</td>
+</tr>
+<tr>
+<td style="text-align:left">HotModuleReplacementPlugin</td>
+<td style="text-align:left">开启热模块替换功能（HMR），需要阅读 webpack <a href="https://webpack.docschina.org/concepts/hot-module-replacement">文档</a></td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<h2>解析 (resolve)</h2>
+<p><code>resolve</code> 定义了一些查找模块时的选项，也就是去哪找、怎么找的问题。</p>
+<h3>路径别名 (alias)</h3>
+<p><code>resolve.alias</code> 接收一个对象，<code>key</code> 是路径别名，<code>value</code> 是路径的全名。对于常用的路径可以通过这个方式来简化引入文件时的写法，例如：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  resolve: {
+    <span class="hljs-attr">alias</span>: {
+      <span class="hljs-string">'@'</span>: path.resolve(__dirname, <span class="hljs-string">'src/'</span>),
+      <span class="hljs-string">'_c'</span>: path.resolve(__dirname, <span class="hljs-string">'src/components/'</span>)
+    }
+  }
+};
+</code></pre>
+<p>那么在代码中就可这样写：</p>
+<pre><code class="language-js"><span class="hljs-keyword">import</span> config <span class="hljs-keyword">from</span> <span class="hljs-string">'@/config'</span>;
+<span class="hljs-comment">// 相当于 import config from 'rootDir/src/config'</span>
+<span class="hljs-keyword">import</span> Button <span class="hljs-keyword">from</span> <span class="hljs-string">'_c/button'</span>
+<span class="hljs-comment">// 相当于 import Button from 'rootDir/src/components/button'</span>
+</code></pre>
+<h3>默认文件名 (mainFiles)</h3>
+<p>解析模块的时候，如果路径是一个文件夹，那么就会根据 <code>resolve.mainFiles</code> 的值来查找默认文件名。默认为：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  resolve: {
+    <span class="hljs-attr">mainFiles</span>: [<span class="hljs-string">'index'</span>]
+  }
+};
+</code></pre>
+<p>也就是查找 <code>require('../config')</code>时，如果 <code>../config</code> 是一个文件夹，就默认找 <code>../config/index</code> 这个文件。</p>
+<h3>默认扩展名 (extensions)</h3>
+<p>用户在引入模块时可以不带扩展名，默认值是：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  resolve: {
+    <span class="hljs-attr">extensions</span>: [<span class="hljs-string">'.wasm'</span>, <span class="hljs-string">'.mjs'</span>, <span class="hljs-string">'.js'</span>, <span class="hljs-string">'.json'</span>]
+  }
+};
+</code></pre>
+<p>如果用户这些写 <code>import util from './util'</code>，那么会依次尝试查找 <code>./util.wasm</code> 、<code>./util.mjs</code>、<code>./util.js</code>、<code>./util.json</code>，如果找到就结束。</p>
+<h3>引入模块目录 (modules)</h3>
+<p>当我们在代码引入 npm 包时（例如 <code>import axios from 'axios'</code>），webpack 会自动从<code>node_modules</code> 文件夹查找，这个默认查找文件夹就是在这里配置的：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  resolve: {
+    <span class="hljs-attr">modules</span>: [<span class="hljs-string">'node_modules'</span>]
+  }
+};
+</code></pre>
+<p>要注意的是，像上面这样写，webpack 的查找方式就跟 Node.js 一样，会一层层往上查找（即 <code>./node_modules</code>, <code>../node_modules</code> 等等）。如果写成绝对路径，就只找该路径。</p>
+<p>可以配置多个路径，那么就会按照顺序优先级查找：</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">//...</span>
+  resolve: {
+    <span class="hljs-attr">modules</span>: [path.resolve(__dirname, <span class="hljs-string">'src/components'</span>), <span class="hljs-string">'node_modules'</span>]
+  }
+};
+</code></pre>
+
+      </article>
+    </div>
+    <div class="col-lg-3 d-lg-block d-none"></div>
+  </div>
+
+</main>
+
+<div class="footer text-center">
+  Copyright© BigLiao | Powered by <a href="https://github.com/BigLiao/sinblog">SinBlog</a>
+</div>
+
+
+
+    
+    <script src="/blog/assets/js/blog.794bc55a.js"></script>
+    
+
+  </body>
+</html>
